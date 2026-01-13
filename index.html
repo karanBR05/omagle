@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnonChat - Anonymous Text & Video Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #ed64a6;
+            --bg-color: #f7fafc;
+            --surface: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --border: #e2e8f0;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --info: #4299e1;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-lg: 20px;
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--surface);
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .logo-icon {
+            color: var(--secondary);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.5rem 0;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 3px;
+        }
+        
+        /* Main Content Area */
+        main {
+            flex: 1;
+            padding: 2rem 0;
+        }
+        
+        /* Landing Page Styles */
+        .landing-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+            text-align: center;
+            padding: 2rem 0;
+        }
+        
+        .hero {
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+        
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+            width: 100%;
+        }
+        
+        .feature-card {
+            background-color: var(--surface);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+        }
+        
+        .feature-card p {
+            color: var(--text-secondary);
+        }
+        
+        /* Chat Mode Selection */
+        .mode-selection {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            width: 100%;
+        }
+        
+        .mode-buttons {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .mode-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--surface);
+            border: none;
+            border-radius: var(--radius);
+            padding: 2rem 3rem;
+            min-width: 220px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+        
+        .mode-button:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .mode-button:active {
+            transform: translateY(-2px);
+        }
+        
+        .mode-button.selected {
+            border: 3px solid var(--primary);
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+        
+        .mode-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .text-mode .mode-icon {
+            color: var(--primary);
+        }
+        
+        .video-mode .mode-icon {
+            color: var(--secondary);
+        }
+        
+        .mode-button h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .mode-button p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* Start Button */
+        .start-button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 1.2rem 3.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .start-button:active {
+            transform: translateY(-1px);
+        }
+        
+        .start-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Chat Session Screen */
+        .chat-session {
+            display: none;
+            flex-direction: column;
+            height: calc(100vh - 120px);
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background-color: var(--surface);
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            z-index: 10;
+        }
+        
+        .chat-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .status-connecting {
+            background-color: rgba(237, 137, 54, 0.1);
+            color: var(--warning);
+        }
+        
+        .status-connecting .status-dot {
+            background-color: var(--warning);
+        }
+        
+        .status-searching {
+            background-color: rgba(66, 153, 225, 0.1);
+            color: var(--info);
+        }
+        
+        .status-searching .status-dot {
+            background-color: var(--info);
+        }
+        
+        .status-connected {
+            background-color: rgba(72, 187, 120, 0.1);
+            color: var(--success);
+        }
+        
+        .status-connected .status-dot {
+            background-color: var(--success);
+        }
+        
+        .status-disconnected {
+            background-color: rgba(245, 101, 101, 0.1);
+            color: var(--danger);
+        }
+        
+        .status-disconnected .status-dot {
+            background-color: var(--danger);
+        }
+        
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 1.5rem 0;
+        }
+        
+        /* Text Chat Layout */
+        .text-chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .message {
+            max-width: 70%;
+            padding: 1rem;
+            border-radius: var(--radius);
+            word-wrap: break-word;
+        }
+        
+        .message-outgoing {
+            align-self: flex-end;
+            background-color: rgba(102, 126, 234, 0.1);
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message-incoming {
+            align-self: flex-start;
+            background-color: rgba(237, 100, 166, 0.1);
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            font-size: 0.85rem;
+        }
+        
+        .message-outgoing .message-sender {
+            color: var(--primary);
+        }
+        
+        .message-incoming .message-sender {
+            color: var(--secondary);
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-align: right;
+            margin-top: 0.5rem;
+        }
+        
+        .text-input-area {
+            border-top: 1px solid var(--border);
+            padding: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .text-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .send-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .send-button:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+        
+        /* Video Chat Layout */
+        .video-chat-container {
+            display: flex;
+            height: 100%;
+            position: relative;
+        }
+        
+        /* Desktop Layout */
+        .desktop-layout {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            padding: 1rem;
+            gap: 1rem;
+        }
+        
+        .local-video-container, .remote-video-container {
+            flex: 1;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background-color: #1a202c;
+            position: relative;
+            min-height: 300px;
+        }
+        
+        .video-label {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            z-index: 2;
+        }
+        
+        .video-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .video-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Mobile Layout */
+        .mobile-layout {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+        
+        .remote-video-mobile {
+            flex: 3;
+            background-color: #1a202c;
+            position: relative;
+        }
+        
+        .local-video-mobile {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            width: 120px;
+            height: 160px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            background-color: #2d3748;
+            border: 3px solid var(--surface);
+            z-index: 10;
+        }
+        
+        /* Control Bar */
+        .control-bar {
+            background-color: var(--surface);
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+        
+        .control-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-primary);
+            min-width: 100px;
+        }
+        
+        .control-button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .control-button:active {
+            transform: scale(0.95);
+        }
+        
+        .control-button i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .control-button.primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .control-button.primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .control-button.warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .control-button.warning:hover {
+            background-color: #dd6b20;
+        }
+        
+        .control-button.danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .control-button.danger:hover {
+            background-color: #e53e3e;
+        }
+        
+        .control-button.active {
+            background-color: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+        }
+        
+        /* Connection Status Overlay */
+        .status-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(247, 250, 252, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .status-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .status-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .status-description {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin-bottom: 2rem;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(102, 126, 234, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--surface);
+            padding: 2rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-link:hover {
+            color: var(--primary);
+        }
+        
+        .copyright {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .mode-buttons {
+                flex-direction: column;
+                width: 100%;
+                max-width: 400px;
+            }
+            
+            .mode-button {
+                width: 100%;
+            }
+            
+            .desktop-layout {
+                flex-direction: column;
+            }
+            
+            .local-video-container, .remote-video-container {
+                min-height: 250px;
+            }
+            
+            .control-button {
+                min-width: 80px;
+                padding: 0.6rem 1rem;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .feature-card {
+                padding: 1.5rem;
+            }
+            
+            .control-bar {
+                padding: 0.8rem;
+            }
+            
+            .control-button {
+                min-width: 70px;
+                padding: 0.5rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            
+            .control-button i {
+                font-size: 1.2rem;
+            }
+        }
+        
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+        
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .mt-1 { margin-top: 1rem; }
+        .mt-2 { margin-top: 2rem; }
+        .mt-3 { margin-top: 3rem; }
+        .mb-1 { margin-bottom: 1rem; }
+        .mb-2 { margin-bottom: 2rem; }
+        .mb-3 { margin-bottom: 3rem; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-comment-dots logo-icon"></i>
+                <span>AnonChat</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-link active">Home</a>
+                <a href="#" class="nav-link">How it Works</a>
+                <a href="#" class="nav-link">Safety</a>
+                <a href="#" class="nav-link">FAQ</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Landing Page -->
+        <div id="landingPage" class="landing-page">
+            <div class="hero">
+                <h1>Anonymous Text & Video Chat</h1>
+                <p>Connect instantly with random strangers around the world. No registration required. Your privacy is our priority.</p>
+            </div>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <i class="fas fa-user-shield feature-icon"></i>
+                    <h3>100% Anonymous</h3>
+                    <p>No registration, no personal data collected. Chat freely without revealing your identity.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-bolt feature-icon"></i>
+                    <h3>Instant Connection</h3>
+                    <p>Start chatting in seconds. Find a partner immediately with our smart matching system.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-mobile-alt feature-icon"></i>
+                    <h3>Mobile First</h3>
+                    <p>Optimized for all devices. Enjoy seamless experience on desktop, tablet, and mobile.</p>
+                </div>
+            </div>
+            
+            <div class="mode-selection">
+                <h2>Choose Your Chat Mode</h2>
+                <div class="mode-buttons">
+                    <button id="textModeButton" class="mode-button text-mode selected">
+                        <i class="fas fa-comment-alt mode-icon"></i>
+                        <h3>Text Chat</h3>
+                        <p>Anonymous text conversation</p>
+                    </button>
+                    <button id="videoModeButton" class="mode-button video-mode">
+                        <i class="fas fa-video mode-icon"></i>
+                        <h3>Video Chat</h3>
+                        <p>Face-to-face anonymous video</p>
+                    </button>
+                </div>
+                
+                <button id="startChatButton" class="start-button">
+                    <i class="fas fa-play"></i>
+                    Start Text Chat
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Session (Hidden Initially) -->
+        <div id="chatSession" class="chat-session">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="container chat-header-content">
+                    <div class="chat-info">
+                        <div class="logo">
+                            <i class="fas fa-comment-dots logo-icon"></i>
+                            <span>AnonChat</span>
+                        </div>
+                        <div id="statusIndicator" class="status-indicator status-connecting">
+                            <div class="status-dot"></div>
+                            <span>Connecting...</span>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button id="endSessionButton" class="control-button danger" style="padding: 0.5rem 1rem;">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Leave</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <!-- Text Chat Container -->
+                <div id="textChatContainer" class="text-chat-container hidden">
+                    <div id="messagesContainer" class="messages-container">
+                        <!-- Messages will be inserted here dynamically -->
+                        <div class="message message-incoming">
+                            <div class="message-sender">Stranger</div>
+                            <div class="message-text">Hi there! Ready to chat anonymously?</div>
+                            <div class="message-time">Just now</div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-input-area">
+                        <input type="text" id="messageInput" class="text-input" placeholder="Type your message here...">
+                        <button id="sendMessageButton" class="send-button">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Video Chat Container -->
+                <div id="videoChatContainer" class="video-chat-container hidden">
+                    <!-- Desktop Layout -->
+                    <div id="desktopLayout" class="desktop-layout">
+                        <div class="remote-video-container">
+                            <div class="video-label">Stranger</div>
+                            <div id="remoteVideoPlaceholder" class="video-placeholder">
+                                <i class="fas fa-user-circle"></i>
+                                <p>Waiting for partner to connect...</p>
+                            </div>
+                            <!-- Remote video would be displayed here in real implementation -->
+                        </div>
+                        
+                        <div class="local-video-container">
+                            <div class="video-label">You</div>
+                            <div id="localVideoPlaceholder" class="video-placeholder">
+                                <i class="fas fa-user-circle"></i>
+                                <p>Your video will appear here</p>
+                            </div>
+                            <!-- Local video would be displayed here in real implementation -->
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile Layout (hidden on desktop) -->
+                    <div id="mobileLayout" class="mobile-layout hidden">
+                        <div class="remote-video-mobile">
+                            <div class="video-label">Stranger</div>
+                            <div id="remoteVideoMobilePlaceholder" class="video-placeholder">
+                                <i class="fas fa-user-circle"></i>
+                                <p>Waiting for partner...</p>
+                            </div>
+                        </div>
+                        <div class="local-video-mobile">
+                            <div class="video-placeholder">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Bar -->
+            <div class="control-bar">
+                <button id="nextButton" class="control-button primary">
+                    <i class="fas fa-forward"></i>
+                    <span>Next</span>
+                </button>
+                
+                <button id="muteButton" class="control-button">
+                    <i class="fas fa-volume-up"></i>
+                    <span>Mute</span>
+                </button>
+                
+                <button id="videoToggleButton" class="control-button active">
+                    <i class="fas fa-video"></i>
+                    <span>Video On</span>
+                </button>
+                
+                <button id="reportButton" class="control-button warning">
+                    <i class="fas fa-flag"></i>
+                    <span>Report</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Connection Status Overlay -->
+        <div id="statusOverlay" class="status-overlay hidden">
+            <div class="loader"></div>
+            <h2 id="statusTitle" class="status-title">Connecting to Server</h2>
+            <p id="statusDescription" class="status-description">Please wait while we establish a secure connection...</p>
+            <button id="cancelConnectionButton" class="control-button danger mt-2">
+                <i class="fas fa-times"></i>
+                Cancel
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div class="copyright">
+                © 2023 AnonChat. All rights reserved.
+            </div>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Community Guidelines</a>
+                <a href="#" class="footer-link">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // State Management
+        let appState = {
+            currentPage: 'landing',
+            chatMode: 'text', // 'text' or 'video'
+            connectionStatus: 'disconnected', // 'disconnected', 'connecting', 'searching', 'connected'
+            isMuted: false,
+            isVideoOn: true,
+            isMobileView: window.innerWidth <= 768
+        };
+
+        // DOM Elements
+        const landingPage = document.getElementById('landingPage');
+        const chatSession = document.getElementById('chatSession');
+        const statusOverlay = document.getElementById('statusOverlay');
+        
+        // Landing page elements
+        const textModeButton = document.getElementById('textModeButton');
+        const videoModeButton = document.getElementById('videoModeButton');
+        const startChatButton = document.getElementById('startChatButton');
+        
+        // Chat session elements
+        const textChatContainer = document.getElementById('textChatContainer');
+        const videoChatContainer = document.getElementById('videoChatContainer');
+        const desktopLayout = document.getElementById('desktopLayout');
+        const mobileLayout = document.getElementById('mobileLayout');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusDescription = document.getElementById('statusDescription');
+        
+        // Control buttons
+        const endSessionButton = document.getElementById('endSessionButton');
+        const nextButton = document.getElementById('nextButton');
+        const muteButton = document.getElementById('muteButton');
+        const videoToggleButton = document.getElementById('videoToggleButton');
+        const reportButton = document.getElementById('reportButton');
+        const cancelConnectionButton = document.getElementById('cancelConnectionButton');
+        
+        // Text chat elements
+        const messageInput = document.getElementById('messageInput');
+        const sendMessageButton = document.getElementById('sendMessageButton');
+        const messagesContainer = document.getElementById('messagesContainer');
+
+        // Initialize the app
+        function initApp() {
+            // Check if mobile view
+            checkViewport();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Initialize UI based on initial state
+            updateUI();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Landing page events
+            textModeButton.addEventListener('click', () => selectChatMode('text'));
+            videoModeButton.addEventListener('click', () => selectChatMode('video'));
+            startChatButton.addEventListener('click', startChat);
+            
+            // Chat session events
+            endSessionButton.addEventListener('click', endChat);
+            nextButton.addEventListener('click', findNextPartner);
+            muteButton.addEventListener('click', toggleMute);
+            videoToggleButton.addEventListener('click', toggleVideo);
+            reportButton.addEventListener('click', reportUser);
+            cancelConnectionButton.addEventListener('click', cancelConnection);
+            
+            // Text chat events
+            sendMessageButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+            
+            // Window resize event for responsive layout
+            window.addEventListener('resize', handleResize);
+        }
+
+        // Handle window resize
+        function handleResize() {
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile !== appState.isMobileView) {
+                appState.isMobileView = isMobile;
+                
+                // Update video layout if in video chat mode
+                if (appState.chatMode === 'video' && appState.currentPage === 'chat') {
+                    updateVideoLayout();
+                }
+            }
+        }
+
+        // Check viewport size
+        function checkViewport() {
+            appState.isMobileView = window.innerWidth <= 768;
+        }
+
+        // Select chat mode (text or video)
+        function selectChatMode(mode) {
+            appState.chatMode = mode;
+            
+            // Update UI for mode selection
+            textModeButton.classList.toggle('selected', mode === 'text');
+            videoModeButton.classList.toggle('selected', mode === 'video');
+            
+            // Update start button text
+            startChatButton.innerHTML = `<i class="fas fa-play"></i> Start ${mode === 'text' ? 'Text' : 'Video'} Chat`;
+            
+            updateUI();
+        }
+
+        // Start a chat session
+        function startChat() {
+            // Switch to chat session view
+            appState.currentPage = 'chat';
+            landingPage.style.display = 'none';
+            chatSession.style.display = 'flex';
+            
+            // Show appropriate chat container
+            if (appState.chatMode === 'text') {
+                textChatContainer.classList.remove('hidden');
+                videoChatContainer.classList.add('hidden');
+            } else {
+                textChatContainer.classList.add('hidden');
+                videoChatContainer.classList.remove('hidden');
+                updateVideoLayout();
+            }
+            
+            // Start connection process
+            startConnection();
+        }
+
+        // Start connection process
+        function startConnection() {
+            // Show status overlay
+            statusOverlay.classList.remove('hidden');
+            updateConnectionStatus('connecting');
+            
+            // Simulate connection process
+            setTimeout(() => {
+                updateConnectionStatus('searching');
+                
+                // Simulate finding a partner
+                setTimeout(() => {
+                    updateConnectionStatus('connected');
+                    
+                    // Hide status overlay after a moment
+                    setTimeout(() => {
+                        statusOverlay.classList.add('hidden');
+                    }, 1500);
+                    
+                    // Add a welcome message for text chat
+                    if (appState.chatMode === 'text') {
+                        addMessage('Stranger', 'Hello! Ready to chat anonymously?', 'incoming');
+                    }
+                }, 2000);
+            }, 1500);
+        }
+
+        // Update connection status
+        function updateConnectionStatus(status) {
+            appState.connectionStatus = status;
+            
+            // Update status indicator
+            statusIndicator.className = `status-indicator status-${status}`;
+            
+            // Update status text
+            let statusText = '';
+            let statusTitleText = '';
+            let statusDescText = '';
+            
+            switch(status) {
+                case 'connecting':
+                    statusText = 'Connecting...';
+                    statusTitleText = 'Connecting to Server';
+                    statusDescText = 'Please wait while we establish a secure connection...';
+                    break;
+                case 'searching':
+                    statusText = 'Searching for partner...';
+                    statusTitleText = 'Finding a Partner';
+                    statusDescText = 'Looking for someone to chat with...';
+                    break;
+                case 'connected':
+                    statusText = 'Connected';
+                    statusTitleText = 'Connected!';
+                    statusDescText = 'You are now connected with a stranger. Enjoy your conversation!';
+                    break;
+                case 'disconnected':
+                    statusText = 'Disconnected';
+                    statusTitleText = 'Disconnected';
+                    statusDescText = 'You have been disconnected from the chat.';
+                    break;
+            }
+            
+            statusIndicator.innerHTML = `<div class="status-dot"></div><span>${statusText}</span>`;
+            statusTitle.textContent = statusTitleText;
+            statusDescription.textContent = statusDescText;
+            
+            // Enable/disable controls based on connection status
+            const isConnected = status === 'connected';
+            nextButton.disabled = !isConnected;
+            muteButton.disabled = !isConnected;
+            videoToggleButton.disabled = !isConnected;
+            reportButton.disabled = !isConnected;
+            
+            if (appState.chatMode === 'text') {
+                messageInput.disabled = !isConnected;
+                sendMessageButton.disabled = !isConnected;
+            }
+        }
+
+        // Update video layout based on screen size
+        function updateVideoLayout() {
+            if (appState.isMobileView) {
+                desktopLayout.classList.add('hidden');
+                mobileLayout.classList.remove('hidden');
+            } else {
+                desktopLayout.classList.remove('hidden');
+                mobileLayout.classList.add('hidden');
+            }
+        }
+
+        // End chat session
+        function endChat() {
+            // Update connection status
+            updateConnectionStatus('disconnected');
+            
+            // Show status overlay with disconnect message
+            statusOverlay.classList.remove('hidden');
+            statusTitle.textContent = 'Disconnected';
+            statusDescription.textContent = 'You have left the chat session.';
+            
+            // Return to landing page after a moment
+            setTimeout(() => {
+                appState.currentPage = 'landing';
+                landingPage.style.display = 'flex';
+                chatSession.style.display = 'none';
+                statusOverlay.classList.add('hidden');
+                
+                // Clear messages
+                clearMessages();
+            }, 1500);
+        }
+
+        // Find next partner
+        function findNextPartner() {
+            // Show searching status
+            updateConnectionStatus('searching');
+            statusOverlay.classList.remove('hidden');
+            
+            // Clear messages if in text chat
+            if (appState.chatMode === 'text') {
+                clearMessages();
+            }
+            
+            // Simulate finding a new partner
+            setTimeout(() => {
+                updateConnectionStatus('connected');
+                
+                // Hide status overlay after a moment
+                setTimeout(() => {
+                    statusOverlay.classList.add('hidden');
+                }, 1500);
+                
+                // Add a welcome message for text chat
+                if (appState.chatMode === 'text') {
+                    addMessage('Stranger', 'Hi! I\'m your new chat partner.', 'incoming');
+                }
+            }, 2000);
+        }
+
+        // Toggle mute
+        function toggleMute() {
+            appState.isMuted = !appState.isMuted;
+            
+            // Update button UI
+            muteButton.innerHTML = appState.isMuted ? 
+                `<i class="fas fa-volume-mute"></i><span>Unmute</span>` : 
+                `<i class="fas fa-volume-up"></i><span>Mute</span>`;
+            
+            // In a real app, this would toggle audio stream
+            console.log(`Audio ${appState.isMuted ? 'muted' : 'unmuted'}`);
+        }
+
+        // Toggle video
+        function toggleVideo() {
+            appState.isVideoOn = !appState.isVideoOn;
+            
+            // Update button UI
+            videoToggleButton.classList.toggle('active', appState.isVideoOn);
+            videoToggleButton.innerHTML = appState.isVideoOn ? 
+                `<i class="fas fa-video"></i><span>Video On</span>` : 
+                `<i class="fas fa-video-slash"></i><span>Video Off</span>`;
+            
+            // In a real app, this would toggle video stream
+            console.log(`Video ${appState.isVideoOn ? 'enabled' : 'disabled'}`);
+        }
+
+        // Report user
+        function reportUser() {
+            // Show a simple alert (in real app, this would open a modal)
+            alert('Thank you for reporting. Our team will review this user. Would you like to continue with a new partner?');
+            
+            // Automatically find next partner after reporting
+            findNextPartner();
+        }
+
+        // Cancel connection
+        function cancelConnection() {
+            // Return to landing page
+            appState.currentPage = 'landing';
+            landingPage.style.display = 'flex';
+            chatSession.style.display = 'none';
+            statusOverlay.classList.add('hidden');
+            updateConnectionStatus('disconnected');
+        }
+
+        // Send a message (text chat)
+        function sendMessage() {
+            const messageText = messageInput.value.trim();
+            
+            if (messageText === '') return;
+            
+            // Add message to UI
+            addMessage('You', messageText, 'outgoing');
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Simulate a reply after a short delay
+            setTimeout(() => {
+                const replies = [
+                    "Interesting! Tell me more.",
+                    "I've never thought about it that way.",
+                    "That's cool! What else is on your mind?",
+                    "I agree with you on that.",
+                    "Thanks for sharing!"
+                ];
+                
+                const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                addMessage('Stranger', randomReply, 'incoming');
+            }, 1000);
+        }
+
+        // Add a message to the chat
+        function addMessage(sender, text, type) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message message-${type}`;
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            messageElement.innerHTML = `
+                <div class="message-sender">${sender}</div>
+                <div class="message-text">${text}</div>
+                <div class="message-time">${timeString}</div>
+            `;
+            
+            messagesContainer.appendChild(messageElement);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Clear all messages
+        function clearMessages() {
+            messagesContainer.innerHTML = '';
+        }
+
+        // Update UI based on app state
+        function updateUI() {
+            // Update video layout if needed
+            if (appState.chatMode === 'video' && appState.currentPage === 'chat') {
+                updateVideoLayout();
+            }
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>

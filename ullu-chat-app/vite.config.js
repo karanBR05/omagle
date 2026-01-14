@@ -11,8 +11,7 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       react(),
       // Only use SSL in dev for local network testing.
-      // In production (Vercel), SSL is handled by the platform.
-      isDev && basicSsl()
+      ...(isDev ? [basicSsl()] : [])
     ],
     server: {
       host: true,

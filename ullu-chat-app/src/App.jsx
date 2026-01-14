@@ -15,7 +15,9 @@ import io from 'socket.io-client';
 // To make things simple, we'll try to connect to the hostname.
 // Socket used to point to http://hostname:3000 but that fails on HTTPS pages (Mixed Content).
 // Now we rely on Vite's proxy, so we simply connect to the current origin.
-const SOCKET_URL = '/';
+// In production, this must point to your separate backend server (e.g. Render/Railway)
+// because Vercel cannot host persistent WebSocket servers.
+const SOCKET_URL = import.meta.env.VITE_SERVER_URL || '/';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('landing');
